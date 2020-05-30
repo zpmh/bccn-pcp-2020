@@ -1,48 +1,157 @@
-from unittest import TestCase
 import numpy as np
-from agents.common import BoardPiece, NO_PLAYER, PLAYER1, PLAYER2
+from agents.common import BoardPiece, NO_PLAYER, PLAYER1, PLAYER2, GameState
+from agents.common import initialize_game_state, pretty_print_board, string_to_board, connected_four, apply_player_action, check_board_full, check_end_state
 
-class TestGame(TestCase):
+#test cases
 
-	def test_initialize_game_state(self):
-		from agents.common import initialize_game_state
+#empty board
+empty_board = "|==============|\n" \
+              "|              |\n" \
+              "|              |\n" \
+              "|              |\n" \
+              "|              |\n" \
+              "|              |\n" \
+              "|              |\n" \
+              "|==============|\n" \
+              "|0 1 2 3 4 5 6 |\n"
 
-		ret = initialize_game_state()
+#one piece of player1 (X) placed on board
+one_piece_board = "|==============|\n" \
+                  "|X             |\n" \
+                  "|              |\n" \
+                  "|              |\n" \
+                  "|              |\n" \
+                  "|              |\n" \
+                  "|              |\n" \
+                  "|==============|\n" \
+                  "|0 1 2 3 4 5 6 |\n"
 
-		assert isinstance(ret, np.ndarray)
-		assert ret.dtype == BoardPiece
-		# assert ret.shape == (6, 7)
-		assert ret.shape == (6, 7)
-		assert np.all(ret == NO_PLAYER)
-
-	def test_pretty_print_board(self):
-		'check is board can be shown as a string'
-		from agents.common import pretty_print_board
-
-		#ret = pretty_print_board()
-
-# if isString(True):
-
+#full board in a draw
+full_draw_board = "|==============|\n" \
+                  "|X X O O X X O |\n" \
+                  "|X O X O X X X |\n" \
+                  "|O O X O X O O |\n" \
+                  "|O O X X O X X |\n" \
+                  "|X X O O O X O |\n" \
+                  "|X X X O X X X |\n" \
+                  "|==============|\n" \
+                  "|0 1 2 3 4 5 6 |\n"
 
 def test_initialize_game_state():
-    from agents.common import initialize_game_state
+	'''tests if board is created correctly'''
 
-    ret = initialize_game_state()
+	ret = initialize_game_state()
 
-    assert isinstance(ret, np.ndarray)
-    assert ret.dtype == BoardPiece
-    #assert ret.shape == (6, 7)
-    assert ret.shape == (6,7)
-    assert np.all(ret == NO_PLAYER)
+	assert isinstance(ret, np.ndarray)
+	assert ret.dtype == BoardPiece
+	assert ret.shape == (6, 7)
+	assert np.all(ret == NO_PLAYER)
+
 
 def test_pretty_print_board():
-	'check is board can be shown as a string'
-	#from agents.common import pretty_print_board
+	'''tests if board can be shown as a string'''
 
-	#ret = pretty_print_board()
+	#test case: empty board
+	board = initialize_game_state()
+	ret = pretty_print_board(board)
 
-	#if isString(True):
+	#assert pretty_print_board  equal to the empty test board created above
+	assert empty_board.__eq__(ret)
 
+def test_string_to_board():
 
-def test_player_action():
-	'check whether board is different after player action is applied, put piece at the lowest slot in that column'
+	#test case 1: empty board
+	ret = string_to_board(empty_board)
+
+	assert ret.dtype == BoardPiece
+	assert isinstance(ret, np.ndarray)
+	assert ret.shape == (6, 7)
+	assert np.all(ret == NO_PLAYER)
+
+	board = initialize_game_state()
+
+	assert np.array_equal(ret, board)
+
+	#test case 2: with one BoardPieces of player 1 placed on board
+	board = initialize_game_state()
+	board[0,0] = PLAYER1
+
+	ret = string_to_board(one_piece_board)
+
+	assert np.array_equal(ret, board)
+
+def test_apply_player_action():
+
+	action_board = initialize_game_state()
+	ret = apply_player_action(action_board, 0, PLAYER1)
+
+	board = string_to_board(one_piece_board)
+
+	assert np.array_equal(board, ret)
+
+def test_connected_four():
+	#TODO: generalize (test for all possibilities)
+
+	#test horizontal
+	board = initialize_game_state()
+	board[0, 0] = PLAYER1
+	board[1, 0] = PLAYER1
+	board[2, 0] = PLAYER1
+	board[3, 0] = PLAYER1
+
+	assert connected_four(board, PLAYER1)
+
+	#test vertical
+	board = initialize_game_state()
+	board[0, 1] = PLAYER1
+	board[0, 2] = PLAYER1
+	board[0, 3] = PLAYER1
+	board[0, 4] = PLAYER1
+
+	assert connected_four(board, PLAYER1)
+
+	#test diagonal left-right
+	board = initialize_game_state()
+	board[0, 0] = PLAYER1
+	board[1, 1] = PLAYER1
+	board[2, 2] = PLAYER1
+	board[3, 3] = PLAYER1
+
+	assert connected_four(board, PLAYER1)
+
+	#test diagonal right-left
+	board = initialize_game_state()
+	board[0, 6] = PLAYER1
+	board[1, 5] = PLAYER1
+	board[2, 4] = PLAYER1
+	board[3, 3] = PLAYER1
+
+	assert connected_four(board, PLAYER1)
+
+def test_check_board_full():
+
+	ret = string_to_board(full_draw_board)
+
+	assert check_board_full(ret)
+
+def test_check_end_state():
+	#test win
+
+	#horizontal
+	board = initialize_game_state()
+	board[0, 0] = PLAYER1
+	board[1, 0] = PLAYER1
+	board[2, 0] = PLAYER1
+	board[3, 0] = PLAYER1
+
+	assert (check_end_state(board,PLAYER1) == GameState.IS_WIN)
+
+	#test draw
+	draw_board = string_to_board(full_draw_board)
+
+	assert check_end_state(draw_board,PLAYER1) == GameState.IS_DRAW
+
+	#test still playing
+	playing_board = string_to_board(one_piece_board)
+
+	assert check_end_state(playing_board,PLAYER1) == GameState.STILL_PLAYING
