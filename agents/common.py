@@ -93,7 +93,7 @@ def string_to_board(pp_board: str) -> np.ndarray:
 	#convert board (list) to np.ndarray
 	board = np.array(board)
 	#reverse order of rows
-	#board = np.flip(board,0)
+	board = np.flip(board,0)
 
 	return board
 
