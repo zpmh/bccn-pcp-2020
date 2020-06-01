@@ -66,7 +66,7 @@ def even_odd_row_scores(board: np.ndarray, player: BoardPiece) -> int:
 
 def adjacent_score(adjacent_four: list, player: BoardPiece) -> int:
 	"""
-	Counts how many
+	Counts how many pieces of a specified player are adjacent in all directions and assigns score
 	:param adjacent_four: four adjacent spots on the board in any direction (horizontal, vertial, diagonal)
 	:param player: agent
 	:return: score for playing piece at spot within adjacent_four
