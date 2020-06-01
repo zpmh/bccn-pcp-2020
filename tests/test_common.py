@@ -38,7 +38,6 @@ full_draw_board = "|==============|\n" \
                   "|0 1 2 3 4 5 6 |\n"
 
 def test_initialize_game_state():
-	'''tests if board is created correctly'''
 
 	ret = initialize_game_state()
 
@@ -47,9 +46,7 @@ def test_initialize_game_state():
 	assert ret.shape == (6, 7)
 	assert np.all(ret == NO_PLAYER)
 
-
 def test_pretty_print_board():
-	'''tests if board can be shown as a string'''
 
 	#test case: empty board
 	board = initialize_game_state()
@@ -90,7 +87,7 @@ def test_apply_player_action():
 	assert np.array_equal(board, ret)
 
 def test_connected_four():
-	#TODO: generalize (test for all possibilities)
+	#TODO: generalize (all possible wins)
 
 	#test horizontal
 	board = initialize_game_state()
@@ -110,7 +107,7 @@ def test_connected_four():
 
 	assert connected_four(board, PLAYER1)
 
-	#test diagonal left-right
+	#test diagonal positive
 	board = initialize_game_state()
 	board[0, 0] = PLAYER1
 	board[1, 1] = PLAYER1
@@ -119,7 +116,7 @@ def test_connected_four():
 
 	assert connected_four(board, PLAYER1)
 
-	#test diagonal right-left
+	#test diagonal negative
 	board = initialize_game_state()
 	board[0, 6] = PLAYER1
 	board[1, 5] = PLAYER1
@@ -131,13 +128,14 @@ def test_connected_four():
 def test_check_board_full():
 
 	ret = string_to_board(full_draw_board)
+	ret_false = string_to_board(one_piece_board)
 
 	assert check_board_full(ret)
+	assert check_board_full(ret_false) == False
 
 def test_check_end_state():
-	#test win
 
-	#horizontal
+	# test case: win horizontal
 	board = initialize_game_state()
 	board[0, 0] = PLAYER1
 	board[1, 0] = PLAYER1
@@ -146,12 +144,12 @@ def test_check_end_state():
 
 	assert (check_end_state(board,PLAYER1) == GameState.IS_WIN)
 
-	#test draw
+	#test case: draw
 	draw_board = string_to_board(full_draw_board)
 
 	assert check_end_state(draw_board,PLAYER1) == GameState.IS_DRAW
 
-	#test still playing
+	#test case: still playing
 	playing_board = string_to_board(one_piece_board)
 
 	assert check_end_state(playing_board,PLAYER1) == GameState.STILL_PLAYING
