@@ -53,14 +53,19 @@ def test_even_odd_scores():
 	filled_board = string_to_board(still_playing_board)
 	ret = even_odd_row_scores(filled_board, PLAYER1)
 
-	#PLAYER1 has 6 pieces in odd rows
-	assert ret == 6*2
+	# PLAYER1 has 14 pieces in odd rows
+	assert ret == 14*2
 
-	#TODO: check whats up here
 	ret = even_odd_row_scores(filled_board, PLAYER2)
 
-	#PLAYER2 also has 6 pieces in even rows
-	assert ret == 6
+	#PLAYER2 has 11 pieces in even rows
+	assert ret == 11*2
+
+	#empty board should have 0 for both players
+	empty_board  = initialize_game_state()
+
+	assert even_odd_row_scores(empty_board, PLAYER2) == 0
+	assert even_odd_row_scores(empty_board, PLAYER1) == 0
 
 def test_adjacent_score():
 
@@ -123,10 +128,10 @@ def test_heuristic():
 
 	ret = heuristic(board,PLAYER1)
 
-	#this should be equal to output of vertical adjacent_score for 3 pieces
+	#heuristic should be equal to output of vertical adjacent_score for 3 pieces + weight of those rows
 
-	#calling multiple times so should be 3 adjacent pieces in first call + 2 adjacent pieces in second call
-	score = adjacent_score(list(board[0,0:4]),PLAYER1) + adjacent_score(list(board[0,1:5]),PLAYER1)
+	#calling multiple times so should be 3 adjacent pieces in first call + 2 adjacent pieces in second call + weights of the row
+	score = adjacent_score(list(board[0,0:4]),PLAYER1) + adjacent_score(list(board[0,1:5]),PLAYER1) + even_odd_row_scores(board,PLAYER1)
 
 	assert score == ret
 
@@ -135,6 +140,4 @@ def test_minimax():
 	board = initialize_game_state()
 
 	#first move should be in center column 3
-	assert minimax(board, 4, -math.inf, math.inf, PLAYER1, True) == (3,6)
-
-
+	assert minimax(board, 4, -math.inf, math.inf, PLAYER1, True) == (3,8)

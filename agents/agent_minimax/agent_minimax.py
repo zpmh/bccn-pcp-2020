@@ -36,7 +36,7 @@ def center_column_score(board: np.ndarray, player: BoardPiece) -> int:
 	:return: increased score for column in the center of board
 	'''
 	center_column = int(board.shape[1] / 2)
-	center_column = list(int(i) for i in board[:,center_column])
+	center_column = list(board[:,center_column])
 	pieces_count = center_column.count(player)
 
 	return pieces_count * 3
@@ -49,7 +49,9 @@ def even_odd_row_scores(board: np.ndarray, player: BoardPiece) -> int:
 	:return: increased score for even or odd rows of the board depending on player
 	'''
 
-	if player == PLAYER1:
+	score = 0
+
+	if (player == PLAYER1):
 		# prefer odd rows
 		start = 0
 	else: #player must be PLAYER2
@@ -57,10 +59,10 @@ def even_odd_row_scores(board: np.ndarray, player: BoardPiece) -> int:
 		start = 1
 
 	#get even or odd rows depending on start
-	for row in np.arange(start,board.shape[0],2):
-		even_odd_row = list(int(i) for i in board[row,:])
-		score = even_odd_row.count(player)
-		score += score * 2
+	for row in np.arange(start,board.shape[0], 2):
+		even_odd_row = list(board[row,:])
+		row_score = even_odd_row.count(player)
+		score += row_score * 2
 
 	return score
 
