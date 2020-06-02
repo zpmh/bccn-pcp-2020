@@ -120,7 +120,7 @@ def heuristic(board: np.ndarray, player: BoardPiece) -> int:
 		row = board[row,:]
 		#now loop through each column and check 4 adjacent spots
 		for col in range(num_columns-3): #only need to loop through first 4 cols, since adjacent_4 would touch (j+3)
-			adjacent_four = list(row[col:col+4]) #convert to list to apply count() lalter
+			adjacent_four = list(row[col:col+4]) #convert to list to apply count() later
 			#now count the number of pieces for each player
 			score += adjacent_score(adjacent_four,player)
 
@@ -184,7 +184,7 @@ def minimax(board: np.ndarray, depth: int, alpha: int, beta: int, player: BoardP
 			#now simulate making a move and check what score it would get, save the original board in board
 			board, board_copy = apply_player_action(board, column, player, True)
 			# recursive call to minimax with depth-1 with board_copy so board isn't modified
-			next_score = minimax(board_copy, depth-1, alpha, beta, player, False)[1] #get only the score
+			next_score = minimax(board_copy, depth-1, alpha, beta, player, False)[1] #only get the score
 			#if the score is better save score and column
 			if next_score > score:
 				score = next_score
@@ -204,7 +204,7 @@ def minimax(board: np.ndarray, depth: int, alpha: int, beta: int, player: BoardP
 			if next_score < score:
 				score = next_score
 				action_column = column
-			beta = min(beta, score) #here we wanna minimize since we're opponent player
+			beta = min(beta, score) #minimize opponent's score
 			if alpha >= beta:
 				break
 		return action_column, score
