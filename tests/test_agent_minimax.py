@@ -14,17 +14,10 @@ still_playing_board = "|==============|\n" \
                   "|==============|\n" \
                   "|0 1 2 3 4 5 6 |\n"
 
-def test_check_open_columns():
-
-	open_cols = string_to_board(still_playing_board)
-	check_open_columns(open_cols)
-
-	assert list(check_open_columns(open_cols)) == [1,3,4]
-
-def test_generate_move_minimax():
+def test_generate_move():
 
 	board = initialize_game_state()
-	ret = generate_move_minimax(board, PLAYER1, board)
+	ret = generate_move(board, PLAYER1, board)
 
 	#first move should be in column 3 and saved state not modified
 	assert ret == (3,board)
@@ -96,7 +89,7 @@ def test_adjacent_score():
 	pos_list = (board[0,0],board[1,1],board[2,2],board[3,3])
 	ret = adjacent_score(pos_list, PLAYER1)
 
-	assert ret == 40
+	assert ret == 100
 
 	#test case 4: postive diagonal
 	board[0, 6] = PLAYER1
@@ -104,14 +97,14 @@ def test_adjacent_score():
 	pos_list = (board[0,6],board[1,5],board[2,4],board[3,3])
 	ret = adjacent_score(pos_list, PLAYER1)
 
-	assert ret == 5
+	assert ret == 10
 
 	#test case 5: block the opponent
 	board[2,4] = PLAYER1
 	pos_list = (board[0,6],board[1,5],board[2,4],board[3,3])
 	ret = adjacent_score(pos_list, PLAYER2)
 
-	assert ret == -60
+	assert ret == -70
 
 def test_heuristic():
 
@@ -140,4 +133,4 @@ def test_minimax():
 	board = initialize_game_state()
 
 	#first move should be in center column 3
-	assert minimax(board, 4, -math.inf, math.inf, PLAYER1, True) == (3,8)
+	assert minimax(board, 4, -math.inf, math.inf, PLAYER1, True) == (3,7)

@@ -1,6 +1,6 @@
 import numpy as np
 from agents.common import BoardPiece, NO_PLAYER, PLAYER1, PLAYER2, GameState
-from agents.common import initialize_game_state, pretty_print_board, string_to_board, connected_four, apply_player_action, check_board_full, check_end_state
+from agents.common import initialize_game_state, pretty_print_board, string_to_board, connected_four, apply_player_action, check_board_full, check_end_state, check_open_columns
 
 #test cases
 
@@ -31,6 +31,16 @@ full_draw_board = "|==============|\n" \
                   "|X X O O X X O |\n" \
                   "|X O X O X X X |\n" \
                   "|O O X O X O O |\n" \
+                  "|O X X X O X X |\n" \
+                  "|X X O O O X O |\n" \
+                  "|X X X O X X X |\n" \
+                  "|==============|\n" \
+                  "|0 1 2 3 4 5 6 |\n"
+
+still_playing_board = "|==============|\n" \
+                  "|X   O     X O |\n" \
+                  "|X O X O   X X |\n" \
+                  "|O O X O   O O |\n" \
                   "|O O X X O X X |\n" \
                   "|X X O O O X O |\n" \
                   "|X X X O X X X |\n" \
@@ -153,3 +163,11 @@ def test_check_end_state():
 	playing_board = string_to_board(one_piece_board)
 
 	assert check_end_state(playing_board,PLAYER1) == GameState.STILL_PLAYING
+
+
+def test_check_open_columns():
+
+	open_cols = string_to_board(still_playing_board)
+	check_open_columns(open_cols)
+
+	assert list(check_open_columns(open_cols)) == [1,3,4]

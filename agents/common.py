@@ -217,3 +217,11 @@ def check_end_state(
 		return GameState.IS_DRAW
 	else:
 		return GameState.STILL_PLAYING
+
+def check_open_columns(board: np.ndarray) -> list:
+	'''
+	Returns list of all open columns by checking which columns in last row are equal to NO_PLAYER
+	:param board: current state of board
+	:return: list of open columns
+	'''
+	return list(np.argwhere(board[board.shape[0] - 1, :] == NO_PLAYER).flatten())

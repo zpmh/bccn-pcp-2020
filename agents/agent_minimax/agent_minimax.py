@@ -2,12 +2,12 @@ import numpy as np
 import math
 from typing import Optional, Tuple
 from agents.common import BoardPiece, PlayerAction, SavedState, PLAYER1, PLAYER2, NO_PLAYER, GameState
-from agents.common import connected_four, check_end_state, apply_player_action
+from agents.common import connected_four, check_end_state, apply_player_action, check_open_columns
 
 #num_rows = board.shape[0]
 #num_columns = board.shape[1]
 
-def generate_move_minimax(
+def generate_move(
 	board: np.ndarray, player: BoardPiece, saved_state: Optional[SavedState]
 ) -> Tuple[PlayerAction, Optional[SavedState]]:
 
@@ -19,14 +19,6 @@ def generate_move_minimax(
 	PlayerAction = minimax(board, depth, alpha, beta, player, True)[0]
 
 	return PlayerAction, saved_state
-
-def check_open_columns(board: np.ndarray) -> list:
-	'''
-	Returns list of all open columns by checking which columns in last row are equal to NO_PLAYER
-	:param board: current state of board
-	:return: list of open columns
-	'''
-	return np.argwhere(board[board.shape[0] - 1, :] == NO_PLAYER).flatten()
 
 def center_column_score(board: np.ndarray, player: BoardPiece) -> int:
 	'''
@@ -85,13 +77,15 @@ def adjacent_score(adjacent_four: list, player: BoardPiece) -> int:
 	if adjacent_four.count(player) == 4:
 		score += 10000
 	elif adjacent_four.count(player) == 3 and adjacent_four.count(NO_PLAYER) == 1:
-		score += 40
+		score += 100
 	elif adjacent_four.count(player) == 2 and adjacent_four.count(NO_PLAYER) == 2:
-		score += 5
+		score += 10
 
 	#block opponent from getting a win
 	if adjacent_four.count(opponent_player) == 3 and adjacent_four.count(NO_PLAYER) == 1:
-		score -= 60
+		score -= 70
+	if adjacent_four.count(opponent_player) == 2 and adjacent_four.count(NO_PLAYER) == 2:
+		score -= 10
 
 	return score
 
@@ -161,7 +155,7 @@ def minimax(board: np.ndarray, depth: int, alpha: int, beta: int, player: BoardP
 		opponent_player = PLAYER1
 
 	#check which columns are currently open
-	open_cols = check_open_columns(board)
+	open_cols = np.asarray(check_open_columns(board))
 
 	#check if depth is 0
 	if depth == 0:
@@ -179,7 +173,6 @@ def minimax(board: np.ndarray, depth: int, alpha: int, beta: int, player: BoardP
 
 	if maximizing_player: #get max score for agent
 		score = -math.inf
-		#column = np.random.choice(open_cols)
 		for column in open_cols:
 			#now simulate making a move and check what score it would get, save the original board in board
 			board, board_copy = apply_player_action(board, column, player, True)
@@ -197,14 +190,13 @@ def minimax(board: np.ndarray, depth: int, alpha: int, beta: int, player: BoardP
 
 	else:
 		score = math.inf
-		#column = np.random.choice(open_cols)
 		for column in open_cols:
 			board, action_board = apply_player_action(board, column, opponent_player, True)
 			next_score = minimax(action_board, depth-1, alpha, beta, player, True)[1]
 			if next_score < score:
 				score = next_score
 				action_column = column
-			beta = min(beta, score) #minimize opponent's score
+			beta = min(beta, score) #here we want to minimize since we're opponent player
 			if alpha >= beta:
 				break
 		return action_column, score
